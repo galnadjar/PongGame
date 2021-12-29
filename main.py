@@ -68,37 +68,40 @@ def playSound():
 
 def paddle_a_up():
     y = paddle_a.ycor()
-    y += 15
-    paddle_a.sety(y)
+    if y + 15 < 248:
+        y += 15
+        paddle_a.sety(y)
 
 def paddle_a_down():
     y = paddle_a.ycor()
-    y -= 15
-    paddle_a.sety(y)
+    if y - 15 > -248:
+        y -= 15
+        paddle_a.sety(y)
 
 
 def paddle_b_up():
     y = paddle_b.ycor()
-    y += 15
-    paddle_b.sety(y)
+    if y + 15 < 248:
+        y += 15
+        paddle_b.sety(y)
 
 def paddle_b_down():
     y = paddle_b.ycor()
-    y -= 15
-    paddle_b.sety(y)
-
-
-#keyboard binding
-wn.listen()
-wn.onkeypress(paddle_a_up,"w")
-wn.onkeypress(paddle_a_down,"s")
-wn.onkeypress(paddle_b_up,"Up")
-wn.onkeypress(paddle_b_down,"Down")
+    if y - 15 > -248:
+        y -= 15
+        paddle_b.sety(y)
 
 
 while True:
 
-    while player1Score < 10 and player2Score < 10:
+    # keyboard binding
+    wn.listen()
+    wn.onkeypress(paddle_a_up, "w")
+    wn.onkeypress(paddle_a_down, "s")
+    wn.onkeypress(paddle_b_up, "Up")
+    wn.onkeypress(paddle_b_down, "Down")
+
+    while player1Score < 3 and player2Score < 3:
         wn.update()
 
         #ball movement
@@ -139,13 +142,13 @@ while True:
 
 
         #paddle and ball collison
-        if (ball.xcor() > 330 and ball.xcor() < 350) and ball.ycor() < paddle_b.ycor() + 80 and ball.ycor() > paddle_b.ycor() -80:
+        if (ball.xcor() > 330 and ball.xcor() < 350) and ball.ycor() < paddle_b.ycor() + 50 and ball.ycor() > paddle_b.ycor() -70:
             ball.setx(330)
             ball.dx *= -1
             playSound()
 
 
-        elif (ball.xcor() < -330 and ball.xcor() > -350) and ball.ycor() < paddle_a.ycor() + 80 and ball.ycor() > paddle_a.ycor() -80:
+        elif (ball.xcor() < -330 and ball.xcor() > -350) and ball.ycor() < paddle_a.ycor() + 50 and ball.ycor() > paddle_a.ycor() -70:
             ball.setx(-330)
             ball.dx *= -1
             playSound()
@@ -161,11 +164,11 @@ while True:
     pen.write("{} is WINNER WINNER CHICKEN DINNER!".format(winner),align="center",font=("Courier",22,"bold"))
 
     decision = turtle.textinput("Wanna keep playing?", "Enter your choice")
-    if(decision == "yes"):
+    if decision == "yes":
         player1Score = 0
         player2Score = 0
         pen.clear()
         pen.write("{}: 0    \t Player2: 0 ".format(name), align="center", font=("Courier", 22, "normal"))
 
-    else:
+    elif decision == "no":
         quit()
