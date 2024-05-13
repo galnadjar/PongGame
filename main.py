@@ -4,14 +4,27 @@
 import turtle
 import winsound
 
+TURNS_TO_WIN = 5
+PADDLE_MOVE_DELTA = 15
+
+PADDLE_EDGE_LIMIT = 248
+PADDLE_X_COOR = 330
+Y_AXE_BORDER = 290
+X_AXE_BORDER = 370
+CENTER_SCREEN_Y_COOR = 250
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+
 #Setup screen
 wn = turtle.Screen()
 wn.title("Pong by TheWave")
 wn.bgcolor("black")
-wn.setup(width=800,height=600)
+wn.setup(width=WINDOW_WIDTH,height=WINDOW_HEIGHT)
 wn.tracer(0)
 
 name = turtle.textinput("Enter your Name", "Name")
+
+name = name if name != "" else "Player1"
 
 #Score
 player1Score = 0
@@ -23,9 +36,9 @@ paddle_a = turtle.Turtle()
 paddle_a.speed(0)
 paddle_a.shape("square")
 paddle_a.color("grey")
-paddle_a.shapesize(stretch_wid=6,stretch_len=1)
+paddle_a.shapesize(stretch_wid=6,stretch_len=2)
 paddle_a.penup()
-paddle_a.goto(-350,0)
+paddle_a.goto(-X_AXE_BORDER-10,0)
 
 
 # Paddle B
@@ -33,9 +46,9 @@ paddle_b = turtle.Turtle()
 paddle_b.speed(0)
 paddle_b.shape("square")
 paddle_b.color("grey")
-paddle_b.shapesize(stretch_wid=6,stretch_len=1)
+paddle_b.shapesize(stretch_wid=6,stretch_len=2)
 paddle_b.penup()
-paddle_b.goto(350,0)
+paddle_b.goto(X_AXE_BORDER,0)
 
 
 # Ball
@@ -45,8 +58,8 @@ ball.shape("circle")
 ball.color("red")
 ball.penup()
 ball.goto(0,0)
-ball.dx = 0.25
-ball.dy = 0.25
+ball.dx = 0.1
+ball.dy = 0.1
 
 
 # Pen
@@ -55,40 +68,37 @@ pen.speed(0)
 pen.color("white")
 pen.penup()
 pen.hideturtle()
-pen.goto(0,250)
+pen.goto(0,CENTER_SCREEN_Y_COOR)
 pen.write("{}: 0    \t Player2: 0 ".format(name),align="center",font=("Courier",22,"normal"))
 
 
-
-
-# Function
-
+# Functions
 def playSound():
     winsound.PlaySound("bounce.wav", winsound.SND_ASYNC)
 
 def paddle_a_up():
     y = paddle_a.ycor()
-    if y + 15 < 248:
-        y += 15
+    if y + PADDLE_MOVE_DELTA < PADDLE_EDGE_LIMIT:
+        y += PADDLE_MOVE_DELTA
         paddle_a.sety(y)
 
 def paddle_a_down():
     y = paddle_a.ycor()
-    if y - 15 > -248:
-        y -= 15
+    if y - PADDLE_MOVE_DELTA > -PADDLE_EDGE_LIMIT:
+        y -= PADDLE_MOVE_DELTA
         paddle_a.sety(y)
 
 
 def paddle_b_up():
     y = paddle_b.ycor()
-    if y + 15 < 248:
-        y += 15
+    if y + PADDLE_MOVE_DELTA < PADDLE_EDGE_LIMIT:
+        y += PADDLE_MOVE_DELTA
         paddle_b.sety(y)
 
 def paddle_b_down():
     y = paddle_b.ycor()
-    if y - 15 > -248:
-        y -= 15
+    if y - PADDLE_MOVE_DELTA > -PADDLE_EDGE_LIMIT:
+        y -= PADDLE_MOVE_DELTA
         paddle_b.sety(y)
 
 
@@ -101,29 +111,27 @@ while True:
     wn.onkeypress(paddle_b_up, "Up")
     wn.onkeypress(paddle_b_down, "Down")
 
-    while player1Score < 3 and player2Score < 3:
+    while player1Score < TURNS_TO_WIN and player2Score < TURNS_TO_WIN:
         wn.update()
 
         #ball movement
         ball.setx(ball.xcor() + ball.dx)
         ball.sety(ball.ycor() + ball.dy)
 
-
         #border
-
-        if ball.ycor() > 290:
-            ball.sety(290)
+        if ball.ycor() > Y_AXE_BORDER:
+            ball.sety(Y_AXE_BORDER)
             ball.dy *= -1
             playSound()
 
 
-        elif ball.ycor() < -290:
-            ball.sety(-290)
+        elif ball.ycor() < -Y_AXE_BORDER:
+            ball.sety(-Y_AXE_BORDER)
             ball.dy *= -1
             playSound()
 
 
-        if ball.xcor() > 390:
+        if ball.xcor() > X_AXE_BORDER:
             ball.goto(0,0)
             ball.dx *= -1
             pen.clear()
@@ -132,7 +140,7 @@ while True:
                       font=("Courier", 22, "normal"))
 
 
-        elif ball.xcor() < -390:
+        elif ball.xcor() < -X_AXE_BORDER:
             ball.goto(0,0)
             ball.dx *= -1
             pen.clear()
@@ -142,14 +150,14 @@ while True:
 
 
         #paddle and ball collison
-        if (ball.xcor() > 330 and ball.xcor() < 350) and ball.ycor() < paddle_b.ycor() + 50 and ball.ycor() > paddle_b.ycor() -70:
-            ball.setx(330)
+        if (ball.xcor() > PADDLE_X_COOR and ball.xcor() < X_AXE_BORDER) and ball.ycor() < paddle_b.ycor() + 50 and ball.ycor() > paddle_b.ycor() -70:
+            ball.setx(PADDLE_X_COOR)
             ball.dx *= -1
             playSound()
 
 
-        elif (ball.xcor() < -330 and ball.xcor() > -350) and ball.ycor() < paddle_a.ycor() + 50 and ball.ycor() > paddle_a.ycor() -70:
-            ball.setx(-330)
+        elif (ball.xcor() < -PADDLE_X_COOR and ball.xcor() > -X_AXE_BORDER) and ball.ycor() < paddle_a.ycor() + 50 and ball.ycor() > paddle_a.ycor() -70:
+            ball.setx(-PADDLE_X_COOR)
             ball.dx *= -1
             playSound()
 
@@ -161,14 +169,6 @@ while True:
         winner = "Player 2"
 
     pen.clear()
-    pen.write("{} is WINNER WINNER CHICKEN DINNER!".format(winner),align="center",font=("Courier",22,"bold"))
 
-    decision = turtle.textinput("Wanna keep playing?", "Enter your choice")
-    if decision == "yes":
-        player1Score = 0
-        player2Score = 0
-        pen.clear()
-        pen.write("{}: 0    \t Player2: 0 ".format(name), align="center", font=("Courier", 22, "normal"))
-
-    elif decision == "no":
-        quit()
+    turtle.TK.messagebox.showinfo(title="GAME OVER", message=f"{winner} is WINNER WINNER CHICKEN DINNER!")
+    exit()
